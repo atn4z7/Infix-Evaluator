@@ -1,14 +1,17 @@
 #pragma once
-#include "Infix Evaluator.h"
-
+#include "Infix_Evaluator.h"
 using namespace std;
 
 int main()
 {
+	string my_string("7 - 7 * 35 + 4 / 6 - 10 ");
+	Infix_Evaluator testInfix(my_string);
+	
+	/*
 	cout << "This is a test of compilation and build. " << endl;
 
 	string testString;
-	Infix_Evaluator testInfix;
+	//Infix_Evaluator testInfix;
 	cout << "Testing operator Evaluator function" << endl;
 	for (int i = 0; i < 15; i++)
 	{
@@ -29,5 +32,6 @@ int main()
 	testInfixB.PushToValueStack(1);
 	int answer = testInfixB.evaluate();
 	cout << "The answer to 3 + 4 * 2 - 1 = " << answer << endl;
+	*/
 	system("pause");
 }
