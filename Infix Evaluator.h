@@ -12,6 +12,8 @@
 #include <stdexcept>
 #include <math.h>
 
+using namespace std;
+
 class Infix_Evaluator{
 	/* The Infix Evaluator class has two constructors, one of which is default. It accepts any
 	mathematical expression in infix form and returns a value. If the expression is invalid
@@ -52,17 +54,20 @@ public:
 	int PopValue(void);
 	int operator_evaluator(std::string, int);
 	// Temporarilly public for testing
-	static std::string OPERATOR_LIST[]; // List of operators             Index of operator in operator list
-	static int OPERATOR_PRECEDENCE[]; // List of precedence.             will be index of precedence here.
-	static int NUMBER_OF_OPERATORS;
+	static const  std::string OPERATOR_LIST[]; // List of operators             Index of operator in operator list
+	static const int OPERATOR_PRECEDENCE[]; // List of precedence.             will be index of precedence here.
+	static const int NUMBER_OF_OPERATORS;
 	int evaluate(void); // Function for Testing. DO NOT USE IN LIVE
+	//An, Hoang
+	bool isNumber(string& s);
+	vector<string> Parser(string& expression);
 
 private:
 	std::vector<int> value_stack; // Vector based stack to hold non-operator tokens
 	std::vector<std::string> operator_stack; // Vector based stack to hold operator tokens
-	/*static std::string OPERATOR_LIST[]; // List of operators             Index of operator in operator list
-	static int OPERATOR_PRECEDENCE[]; // List of precedence.             will be index of precedence here.
-	static int NUMBER_OF_OPERATORS;*/
+	/*static const std::string OPERATOR_LIST[]; // List of operators             Index of operator in operator list
+	static const int OPERATOR_PRECEDENCE[]; // List of precedence.             will be index of precedence here.
+	static const int NUMBER_OF_OPERATORS;*/
 	char open_char; // This is the parenthetical operator that called the infix evaluator. If there is no paranthetical call
 	                // then this value will be 'r'
 	int r_int; // Final result of the expression
