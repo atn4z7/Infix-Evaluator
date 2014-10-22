@@ -79,7 +79,7 @@ bool Infix_Evaluator::PushToOperatorStack(std::string operatorToken)
 				tokenPrecedence = OPERATOR_PRECEDENCE[tokenIndex];
 
 				// Compare the precdences of the stack and the token
-				if (tokenPrecedence >= stackPrecedence){
+				if (tokenPrecedence > stackPrecedence){
 					// Push token to operator stack and return true
 					operator_stack.push_back(operatorToken);
 					return true;}
