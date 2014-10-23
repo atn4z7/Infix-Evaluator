@@ -5,32 +5,49 @@ CS 303 - Data Structures (Prof. Kuhail)
 October 2014
 */
 #pragma once
-#include "Infix_Evaluator.h"
+#include "Infix Evaluator.h"
 #include "String_Tokenizer.h"
 #include <algorithm>
 
 /* 
 private:
-std::vector<int> value_stack; // Vector based stack to hold non-operator tokens
-std::vector<std::string> operator_stack; // Vector based stack to hold operator tokens
-const static std::string OPERATOR_LIST; // List of operators             Index of operator in operator list
-const static std::string OPERATOR_PRECEDENCE; // List of precedence.     will be index of precedence here.
-char open_char; // This is the parenthetical operator that called the infix evaluator. If there is no paranthetical call
-// then this value will be 'r'
-int r_int; // Final result of the expression 
+	std::vector<int> value_stack; // Vector based stack to hold non-operator tokens
+	std::vector<std::string> operator_stack; // Vector based stack to hold operator tokens
+	const static std::string OPERATOR_LIST; // List of operators             Index of operator in operator list
+	const static std::string OPERATOR_PRECEDENCE; // List of precedence.     will be index of precedence here.
+	char open_char; // This is the parenthetical operator that called the infix evaluator. If there is no paranthetical call
+	// then this value will be 'r'
+	int r_int; // Final result of the expression 
 */
 
+//Structure
+
+Infix_Evaluator::Token::Token(std::string newData, char newType)
+{
+	the_data = newData; TokenType = newType;
+}
+
 // Static Variables
-const std::string Infix_Evaluator::OPERATOR_LIST[] = { "==", "!=", "&&", "||", ">", ">=", "<", "<=","+", "-", "*", "/", "*", "^", "!" };
-const int Infix_Evaluator::OPERATOR_PRECEDENCE[] = {1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 5, 6, 7};
-const int Infix_Evaluator::NUMBER_OF_OPERATORS = 15;
+std::string Infix_Evaluator::OPERATOR_LIST[] { "==", "!=", "&&", "||", ">", ">=", "<", "<=",
+"+", "-", "*", "/", "^", "!", "++", "--" }; // Binary Operators are 0-12
+int Infix_Evaluator::OPERATOR_PRECEDENCE[] {1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 7, 7, 7};
+int Infix_Evaluator::NUMBER_OF_OPERATORS = 16;
 
 Infix_Evaluator::Infix_Evaluator(){} // Default constructor should do nothing
 
+Infix_Evaluator::Infix_Evaluator(std::string expression){
+	std::vector<Infix_Evaluator::Token> expressionVector;
+	expressionVector = ParseExpression(expression);
+	for (std::vector<Infix_Evaluator::Token>::iterator Q = expressionVector.begin();
+		Q != expressionVector.end(); Q++){
+		std::cout << "The token is: " << Q->TokenType << " with a value of: " << Q->the_data << std::endl;
+	}
+}
+
 Infix_Evaluator::~Infix_Evaluator(){
-	/* The end of the construtor should end with the class having either primative data types or empty vectors
-	However, in the event of an error, the destructor needs to make sure the vectors are empty, and if not
-	delete them. Since we are using std::vector, std::vector::~vector() should handle this automatically. Test it.*/ }
+/* The end of the construtor should end with the class having either primative data types or empty vectors
+   However, in the event of an error, the destructor needs to make sure the vectors are empty, and if not
+   delete them. Since we are using std::vector, std::vector::~vector() should handle this automatically. Test it.*/ }
 
 bool Infix_Evaluator::PushToValueStack(int newValue){
 	/* This function accepts an integer parameter, which can come from a token, or from an evaluation, and puts it
@@ -77,7 +94,7 @@ bool Infix_Evaluator::PushToOperatorStack(std::string operatorToken)
 					}}
 				stackPrecedence = OPERATOR_PRECEDENCE[stackIndex];
 				tokenPrecedence = OPERATOR_PRECEDENCE[tokenIndex];
-
+				
 				// Compare the precdences of the stack and the token
 				if (tokenPrecedence > stackPrecedence){
 					// Push token to operator stack and return true
@@ -121,25 +138,21 @@ int Infix_Evaluator::PopValue(void){
 
 int Infix_Evaluator::operator_evaluator(std::string op, int RHS){
 	/* This function is the method by which the infix evaluator figures out what value to push onto the value
-	stack. None of us know how to program a stream which evaluates an expression, which might be the fastest
-	way of doing this, so we've taken the following option below:
+	   stack. None of us know how to program a stream which evaluates an expression, which might be the fastest
+	   way of doing this, so we've taken the following option below:
 	*/
-
+	
 	//Uniary operators. These do not require a LHS value, we have not taken one from valueStack until after this point.
 	if (op == "!") return !RHS;
 	else if (op == "++") return ++RHS;
 	else if (op == "--") return --RHS;
-
+	
 	//These two lines will not execute if the operator was Uniary
 	int LHS;
 	LHS = PopValue(); 
 	if (op == "^") return (int)pow((double)LHS, RHS);
 	else if (op == "*") return (LHS*RHS);
-	else if (op == "/") {
-		if (RHS == 0) 
-			throw std::logic_error("the denominator is 0");
-		return (LHS / RHS);
-	}
+	else if (op == "/") return (LHS / RHS);
 	else if (op == "%") return (LHS % RHS);
 	else if (op == "+") return (LHS + RHS);
 	else if (op == "-") return (LHS - RHS);
@@ -153,7 +166,6 @@ int Infix_Evaluator::operator_evaluator(std::string op, int RHS){
 	else if (op == "!=") return (LHS != RHS);
 	else throw std::logic_error("Somehow, an unrecognized operator made it onto the stack!");
 }
-
 
 int Infix_Evaluator::evaluate(void){
 	std::string theOperator;
@@ -169,293 +181,130 @@ int Infix_Evaluator::evaluate(void){
 	else throw std::logic_error("Oops");
 }
 
-//An, Hoang
+// Parsing Tokens
+Infix_Evaluator::Token Infix_Evaluator::ParseNewToken(std::string::iterator& Q,
+	std::string::iterator& E, int mode){
 
-Infix_Evaluator::Infix_Evaluator(std::string expression){
-	/* This constructor will create two vectors, value_stack and operator_stack. It will then work on its internal logic
-	to populate both stacks and evaluate the expression. When done, the Infix_Evaluator will also have some integer value
-	r_int which represents the final value of the expression */
-	string current;
-	vector<string> tokens;
-	tokens = Parser(expression);
-	for (int i=0; i<tokens.size();i++){
-		current = tokens[i];
-		if (isNumber(current)){
-			PushToValueStack(stoi(current));
-		}
-		else{
-			PushToOperatorStack(current);
-		}
-	}
-	int answer = evaluate();
-	cout << "The answer " << answer << endl;
-}
-
-bool Infix_Evaluator::isNumber(string& s)
-{
-    string::iterator itr = s.begin();
-    while (itr != s.end() && isdigit(*itr)) ++itr;
-    return !s.empty() && itr == s.end();
-}
-vector<string> Infix_Evaluator::Parser(string& expression){
-	vector<string> result;
-	char token;
-	string tempdigit = "";
-	string tempoperator = "";
-	//remove all spaces first
-	expression.erase(remove(expression.begin(), expression.end(), ' '), expression.end());
-	string::iterator itr = expression.begin();
-	while (itr != expression.end()){
-		if (isdigit(*itr)){ //is digit
-			//for operator
-			if (tempoperator != ""){
-				result.push_back(tempoperator);
-				tempoperator = "";
-			}
-			tempdigit+=*itr;
-			++itr;
-			if (itr == expression.end()){
-				result.push_back(tempdigit);
-				tempdigit = "";
-			}
-		}
-		else{ //not digit
-			//for digit
-			if (tempdigit != ""){
-				result.push_back(tempdigit);
-				tempdigit = "";
-			}
-
-			char current = *itr;
-			switch (current)
+	std::cout << "Entered ParseNewToken function" << std::endl;
+	std::string temp_string = "";
+	if (mode == 0)  // Uniary or Numeric Token expected
+	{
+		std::cout << "Mode 0" << std::endl;
+		std::cout << "*Q is: " << *Q << std::endl;
+		if (*Q == '-') // Negative Numeric Token
+		{
+			std::cout << "Negative Integer or Prefix -- Incomming!" << std::endl;
+			temp_string += *Q;
+			Q++;
+			if (*Q == '-')
 			{
-			case '=':
-				tempoperator+=current;
-				if (tempoperator.length() == 2){ //full
-					if ((tempoperator != ">=") && //check all valid of "*="
-						(tempoperator != "<=") &&
-						(tempoperator != "==") &&
-						(tempoperator != "!=") ){
-							result.push_back("Error Here ->");
-					}
-					result.push_back(tempoperator);
-					tempoperator = "";
-				}
-				break;
-			case '|':
-				tempoperator+=current;
-				if (tempoperator.length() == 2){ //full
-					if (tempoperator != "||"){
-						result.push_back("Error Here ->");
-					}
-					result.push_back(tempoperator);
-					tempoperator = "";
-				}
-				break;
-			case '&':
-				tempoperator+=current;
-				if (tempoperator.length() == 2){ //full
-					if (tempoperator != "&&"){
-						result.push_back("Error Here ->");
-					}
-					result.push_back(tempoperator);
-					tempoperator = "";
-				}
-				break;
-			case '+': // * + 3 will be pushed to vector fine (*,+,3)  even LHS is missing
-				tempoperator+=current;
-				++itr; //the 2nd char
-				if (itr == expression.end() || *itr == '(' || *itr == '!'){ 
-					//if + is at the end of the expression or the 2nd char is '(' or '!'
-					result.push_back(tempoperator);
-					tempoperator = "";
-					--itr;
-					break;
-				}
-				if (isdigit(*itr)) --itr; // only 1 +
-				else{
-					tempoperator+=*itr;
-					if (tempoperator == "+-" || tempoperator == "++"){ // +- or ++
-						++itr; //the 3rd char
-						if (itr == expression.end() || *itr == '(' ){ //if + is at the end of the expression or the 3rd char is '('
-							if (tempoperator.substr(0,1) != tempoperator.substr(1,1)){ //+-( case
-								//add + then add -
-								result.push_back(tempoperator.substr(0,1));
-								result.push_back(tempoperator.substr(1,1));
-								tempoperator = "";
-							}
-							else{//++( case
-								result.push_back(tempoperator);
-								tempoperator = "";
-							}
-							--itr;
-							break;
-						}
-						if (isdigit(*itr)){
-							if (tempoperator != "++") //+-number -> wrong format
-								result.push_back("Error Here ->");
-							result.push_back(tempoperator);
-							itr--;
-						}
-						else{ //is operator
-							tempoperator+=*itr;
-							if (tempoperator == "+--"){
-								result.push_back("+");
-								result.push_back("--");
-							}
-							else if (tempoperator == "+++"){
-								result.push_back("+");
-								result.push_back("++");
-							}
-							else{
-								result.push_back("Error Here ->");
-								result.push_back(tempoperator);
-							}
-						}
-					}
-					else{
-						result.push_back("Error Here ->");
-						result.push_back(tempoperator);
-					}
-					tempoperator = "";
-				}
-				break;
-			case '-':
-				tempoperator+=current;
-				++itr; //the 2nd char
-				if (itr == expression.end() || *itr == '(' || *itr == '!' ){ 
-					//if - is at the end of the expression or the 2nd char is '(' or '!'
-					result.push_back(tempoperator);
-					tempoperator = "";
-					--itr;
-					break;
-				}
-				if (isdigit(*itr)) --itr; // only 1 +
-				else{
-					tempoperator+=*itr;
-					if (tempoperator == "-+" || tempoperator == "--"){ // -+ or --
-						++itr; //the 3rd char
-						if (itr == expression.end() || *itr == '('){ //if - is at the end of the expression or the 3rd char is '('
-							if (tempoperator.substr(0,1) != tempoperator.substr(1,1)){  //-+( case
-								//add - then add +
-								result.push_back(tempoperator.substr(0,1));
-								result.push_back(tempoperator.substr(1,1));
-								tempoperator = "";
-							}
-							else{ //--( case
-								result.push_back(tempoperator);
-								tempoperator = "";
-							}
-							--itr;
-							break;
-						}
-						if (isdigit(*itr)){
-							if (tempoperator != "--") //+-number -> wrong format
-								result.push_back("Error Here ->");
-							result.push_back(tempoperator);
-							itr--;
-						}
-						else{ //is operator
-							tempoperator+=*itr;
-							if (tempoperator == "-++"){
-								result.push_back("-");
-								result.push_back("++");
-							}
-							else if (tempoperator == "---"){
-								result.push_back("-");
-								result.push_back("--");
-							}
-							else{
-								result.push_back("Error Here ->");
-								result.push_back(tempoperator);
-							}
-						}
-					}
-					else{
-						result.push_back("Error Here ->");
-						result.push_back(tempoperator);
-					}
-					tempoperator = "";
-				}
-				break;
-			case '/': 
-			case '%':
-			case '*': 
-				tempoperator+=current;
-				++itr;
-				if (isdigit(*itr)) --itr;
-				else{ // * followed by operator
-					if (*itr == '!' || *itr == '+' || *itr == '-' || *itr == '('){ //* can be followed by !,+,- 
-						result.push_back(tempoperator);
-						--itr;
-					}
-					else{
-						result.push_back("Error Here ->");
-						result.push_back(tempoperator+*itr);
-					}
-					tempoperator = "";
-				}
-				break;
-			case '>':
-			case '<':
-				tempoperator+=current;
-				break;
-			case '(':
-			case ')':
-				tempoperator+=current;
-				result.push_back(tempoperator);
-				tempoperator = "";
-				break;
-			case '!':
-				if (tempoperator.length() >= 1){ //when we meet ! we first add anything that is still in tempoperator to vector
-					result.push_back(tempoperator);
-					tempoperator = "";
-				}
-				tempoperator+=current;
-				++itr;
-				if (isdigit(*itr)) --itr;
-				else{ // ! followed by operator - * can be followed by !,+,-,= 
-					if (*itr == '!' || *itr == '+' || *itr == '-'){
-						result.push_back(tempoperator);
-						--itr;
-					}
-					else if (*itr == '='){
-						//add "!=" to vector
-						result.push_back(tempoperator+*itr);
-					}
-					else{
-						result.push_back("Error Here ->");
-						result.push_back(tempoperator+*itr);
-					}
-					tempoperator = "";
-				}
-				break;
-			case '^':
-				tempoperator+=current;
-				++itr;
-				if (isdigit(*itr)) --itr;
-				else{ // ^ followed by operator - ^ can be followed by !,+,-
-					if (*itr == '!' || *itr == '+' || *itr == '-'){
-						result.push_back(tempoperator);
-						--itr;
-					}
-					else{
-						result.push_back("Error Here ->");
-						result.push_back(tempoperator+*itr);
-					}
-					tempoperator = "";
-				}
-				break;
-				//default:	
+				std::cout << "Negative Prefix Detected!" << std::endl;
+				temp_string += *Q;
+				Q++;
+				std::cout << "Returning a Token with value " << temp_string << std::endl;
+				return Infix_Evaluator::Token(temp_string, 'U');
 			}
-			++itr;
-			if (itr == expression.end()){
-				if (tempoperator != ""){
-					result.push_back(tempoperator);
-					tempoperator = "";
+			while (isdigit(*Q))
+			{
+				std::cout << "In Mode 0 Numeric While" << std::endl;
+				std::cout << "*Q is: " << *Q << std::endl;
+				temp_string += *Q;
+				++Q;
+				if (Q == E) break;
+			}
+			std::cout << "Returning a Token with value " << temp_string << std::endl;
+			return Infix_Evaluator::Token(temp_string, 'D'); // ONLY RUNS IF LOOP TERMINATES
+		}
+		else if (isdigit(*Q))// *Q was a digit but won't be negative.
+		{
+			while (isdigit(*Q))
+			{
+				std::cout << "In Mode 0 Numeric While" << std::endl;
+				std::cout << "*Q is: " << *Q << std::endl;
+				temp_string += *Q;
+				++Q;
+				if (Q == E) break;
+			}
+			std::cout << "Returning a Token with value " << temp_string << std::endl;
+			return Infix_Evaluator::Token(temp_string, 'D'); // ONLY RUNS IF LOOP TERMINATES
+		}
+			while (!isdigit(*Q)) // Q will be an operator token
+			{
+				std::cout << "In Mode 0 Operator While" << std::endl;
+				if (temp_string.length() == 2) return Infix_Evaluator::Token(temp_string, 'U');
+				else
+				{
+					std::cout << "*Q is: " << *Q << std::endl;
+					temp_string += *Q;
+					Q++;
 				}
+			}
+			return Infix_Evaluator::Token(temp_string, 'U');
+		}
+
+		if (mode == 1) // Binary Token Expected
+		while (!isdigit(*Q)) // Q will be an operator token
+		{
+			std::cout << "In Mode 1 While" << std::endl;
+			// Include in the following line the condition:
+			// IF temp_string IN Binary_Operator_Array
+			if (temp_string.length() == 2 || isBinary(temp_string) != -1)
+				return Infix_Evaluator::Token(temp_string, 'B');
+			else
+			{
+				std::cout << "*Q is: " << *Q << std::endl;
+				temp_string += *Q;
+				Q++;
 			}
 		}
+		return Infix_Evaluator::Token(temp_string, 'B');
 	}
-	return result;
+
+// Parse a String into Tokens
+std::vector<Infix_Evaluator::Token> Infix_Evaluator::ParseExpression(std::string& expression)
+{
+	std::vector<Infix_Evaluator::Token> FinalVector;
+	std::string temp_string = "";
+	std::string::iterator Q = expression.begin();
+	std::string::iterator E = expression.end();
+	char lastTokenType;
+	// I assume that the first character of the expression will either be
+	// Uniary or Integer
+	Infix_Evaluator::Token newToken = ParseNewToken(Q, E, 0);
+	FinalVector.push_back(newToken);
+
+	while (Q != expression.end())
+	{
+		lastTokenType = FinalVector.back().TokenType;
+		if (lastTokenType == 'U' || lastTokenType == 'B') // Last token was Uniary or Binary operator
+		{
+			// Next Acceptable token SHOULD BE uniary or numeric
+			newToken = ParseNewToken(Q, E, 0);
+			if (newToken.TokenType == 'U' || newToken.TokenType == 'D')
+				FinalVector.push_back(newToken);
+			else
+				throw std::logic_error("Unacceptable Expression");
+
+		}
+		else // Last token was an integer
+		{
+			newToken = ParseNewToken(Q, E, 1);
+			if (newToken.TokenType == 'B')
+			{
+				FinalVector.push_back(newToken);
+			}
+			else
+				throw std::logic_error("Unacceptable Expression");
+		}
+	}
+	return FinalVector;
+}
+
+int Infix_Evaluator::isBinary(std::string& test_string)
+{
+	for (int i = 0; i < 13; i++)
+	{
+		if (OPERATOR_LIST[i] == test_string) return i;
+	}
+	return -1;
 }
