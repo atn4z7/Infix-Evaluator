@@ -6,28 +6,16 @@ October 2014
 */
 #pragma once
 #include "Infix Evaluator.h"
-#include "String_Tokenizer.h"
 #include <algorithm>
 
-/* 
-private:
-	std::vector<int> value_stack; // Vector based stack to hold non-operator tokens
-	std::vector<std::string> operator_stack; // Vector based stack to hold operator tokens
-	const static std::string OPERATOR_LIST; // List of operators             Index of operator in operator list
-	const static std::string OPERATOR_PRECEDENCE; // List of precedence.     will be index of precedence here.
-	char open_char; // This is the parenthetical operator that called the infix evaluator. If there is no paranthetical call
-	// then this value will be 'r'
-	int r_int; // Final result of the expression 
-*/
-
-//Structure
+// Define Token Constructor
 
 Infix_Evaluator::Token::Token(std::string newData, char newType)
 {
 	the_data = newData; TokenType = newType;
 }
 
-// Static Variables
+// Initialize Static Variables
 std::string Infix_Evaluator::OPERATOR_LIST[] { "==", "!=", "&&", "||", ">", ">=", "<", "<=",
 "+", "-", "*", "/", "^", "!", "++", "--" }; // Binary Operators are 0-12
 int Infix_Evaluator::OPERATOR_PRECEDENCE[] {1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 7, 7, 7};
@@ -35,6 +23,8 @@ int Infix_Evaluator::NUMBER_OF_OPERATORS = 16;
 
 Infix_Evaluator::Infix_Evaluator(){} // Default constructor should do nothing
 
+// Test Constructor. This will parse a string and display all tokens generated in the order they were generated.
+// Does not evaluate the expression.
 Infix_Evaluator::Infix_Evaluator(std::string expression){
 	std::vector<Infix_Evaluator::Token> expressionVector;
 	expressionVector = ParseExpression(expression);
