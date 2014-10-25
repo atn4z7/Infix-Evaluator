@@ -23,16 +23,12 @@ public:
 	~Infix_Evaluator();
 
 	bool PushToOperatorStack(std::string); 
-	// See the Infix_Evaluator.cpp file for documentation on the functions which follow this line.
 	bool PushToValueStack(int); 
 	std::string PopOperator(void);
 	int PopValue(void);
 	int operator_evaluator(std::string, int);
-	// Temporarilly public for testing
-	static std::string OPERATOR_LIST[]; // List of operators             Index of operator in operator list
-	static int OPERATOR_PRECEDENCE[]; // List of precedence.             will be index of precedence here.
 	static int NUMBER_OF_OPERATORS;
-	int evaluate(void); // Function for Testing. DO NOT USE IN LIVE
+
 	struct Token
 	{
 		std::string the_data;
@@ -41,13 +37,13 @@ public:
 	};
 	Infix_Evaluator::Token ParseNewToken(std::string::iterator&, std::string::iterator&, int);
 	std::vector<Infix_Evaluator::Token> ParseExpression(std::string& expression);
+	int r_int; // Final result of the expression
 
 private:
 	std::vector<int> value_stack; // Vector based stack to hold non-operator tokens
 	std::vector<std::string> operator_stack; // Vector based stack to hold operator tokens
-	/*static std::string OPERATOR_LIST[]; // List of operators             Index of operator in operator list
+	static std::string OPERATOR_LIST[]; // List of operators             Index of operator in operator list
 	static int OPERATOR_PRECEDENCE[]; // List of precedence.             will be index of precedence here.
-	static int NUMBER_OF_OPERATORS;*/
-	int r_int; // Final result of the expression
 	int isBinary(std::string&);
+	int evaluate(void); // Evaluates the expression once it is fully parsed.
 };

@@ -7,7 +7,8 @@ int main()
 {
 	cout << "This is a test of compilation and build. " << endl;
 
-	string testString = "13*19+++-9";
+	string testString = "2+2^2*3";
 	Infix_Evaluator testInfix(testString);
+	cout << "The expression " << testString << " evaluates to: " << testInfix.r_int << endl;
 	system("pause");
 }
