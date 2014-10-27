@@ -156,6 +156,13 @@ int Infix_Evaluator::operator_evaluator(std::string op, int RHS){
 	*/
 	
 	//Uniary operators. These do not require a LHS value, we have not taken one from valueStack until after this point.
+	std::cout << "PRECONDITION! Operator is " << op << " and RHS is " << RHS << std::endl;
+	for (std::vector<int>::iterator Q = value_stack.begin(); Q != value_stack.end(); Q++){ std::cout << *Q << " "; }
+	std::cout << std::endl;
+	std::cout << "Operator Stack: ";
+	for (std::vector<std::string>::iterator Q = operator_stack.begin(); Q != operator_stack.end(); Q++){ std::cout << *Q << " "; }
+	std::cout << std::endl;
+	
 	if (op == "!") return !RHS;
 	else if (op == "++") return ++RHS;
 	else if (op == "--") return --RHS;
@@ -185,6 +192,13 @@ int Infix_Evaluator::evaluate(void){
 	int theValue;
 	while (!operator_stack.empty())
 	{
+		std::cout << "PRECONDITION" << std::endl;
+		std::cout << "Value Stack: ";
+		for (std::vector<int>::iterator Q = value_stack.begin(); Q != value_stack.end(); Q++){ std::cout << *Q << " "; }
+		std::cout << std::endl;
+		std::cout << "Operator Stack: ";
+		for (std::vector<std::string>::iterator Q = operator_stack.begin(); Q != operator_stack.end(); Q++){ std::cout << *Q << " "; }
+		std::cout << std::endl;
 		theOperator = PopOperator();
 		theValue = PopValue();
 		PushToValueStack(operator_evaluator(theOperator, theValue));
@@ -251,13 +265,15 @@ Infix_Evaluator::Token Infix_Evaluator::ParseNewToken(std::string::iterator& Q,
 		}
 		while (!isdigit(*Q)) // Q will be an operator token
 		{
-			while (Q!=E && *Q == ' ')
+			while (Q != E && *Q == ' ')
 			{
 				Q++;
 			}
 			std::cout << "In Mode 0 Operator While" << std::endl;
-			if (temp_string.length() == 2 || temp_string == "(" || temp_string == ")") 
+			if (temp_string.length() == 2 || temp_string == "(" || temp_string == ")" || temp_string == "!"){
+				std::cout << "Returning a Token with value " << temp_string << std::endl;
 				return Infix_Evaluator::Token(temp_string, 'U');
+			}
 			else
 			{
 				std::cout << "*Q is: " << *Q << std::endl;
@@ -265,6 +281,7 @@ Infix_Evaluator::Token Infix_Evaluator::ParseNewToken(std::string::iterator& Q,
 				Q++;
 			}
 		}
+		std::cout << "Returning a Token with value " << temp_string << std::endl;
 		return Infix_Evaluator::Token(temp_string, 'U');
 		}
 
@@ -279,10 +296,19 @@ Infix_Evaluator::Token Infix_Evaluator::ParseNewToken(std::string::iterator& Q,
 			// IF temp_string IN Binary_Operator_Array
 			if (temp_string.length() == 2 || ((isBinary(temp_string) != -1) && *Q != '='))
 			{
-				if (temp_string == ")") return Infix_Evaluator::Token(temp_string, 'D');
+				/*if (temp_string == ")")
+				{
+					std::cout << "Returning a Token with value " << temp_string << std::endl;
+					return Infix_Evaluator::Token(temp_string, 'D');
+				}*/
+				std::cout << "Returning a Token with value " << temp_string << std::endl;
 				return Infix_Evaluator::Token(temp_string, 'B');
 			}
-				
+			else if (temp_string == ")")
+			{
+				std::cout << "Returning a Token with value " << temp_string << std::endl;
+				return Infix_Evaluator::Token(temp_string, 'D');
+			}
 			else
 			{
 				std::cout << "*Q is: " << *Q << std::endl;
@@ -291,6 +317,7 @@ Infix_Evaluator::Token Infix_Evaluator::ParseNewToken(std::string::iterator& Q,
 				if (Q == E) break;
 			}
 		}
+		std::cout << "Returning a Token with value " << temp_string << std::endl;
 		return Infix_Evaluator::Token(temp_string, 'B');
 	}
 
