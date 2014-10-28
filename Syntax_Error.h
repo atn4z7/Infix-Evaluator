@@ -1,7 +1,6 @@
 #ifndef SYNTAX_ERROR_H
 #define SYNTAX_ERROR_H
 
-#include <string>
 #include "Token.h"
 #include <iostream>
 
