@@ -8,10 +8,9 @@ October 2014
 #include "Infix_Evaluator.h"
 
 // Static Variables
-const std::string Infix_Evaluator::OPERATOR_LIST[]= { "==", "!=", "&&", "||", ">", ">=", "<", "<=","+", "-", "*", "/", "^", "!", "++", "--" }; // Binary Operators are 0-12
-const int Infix_Evaluator::OPERATOR_PRECEDENCE[] ={1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 7, 7, 7};
-const int Infix_Evaluator::NUMBER_OF_OPERATORS = 16;
-
+const std::string Infix_Evaluator::OPERATOR_LIST[] ={ "==", "!=", "&&", "||", ">", ">=", "<", "<=","+", "-", "*", "/", "^", "!", "++", "--", "(", ")" }; // Binary Operators are 0-12
+const int Infix_Evaluator::OPERATOR_PRECEDENCE[]= {2, 2, 1, 1, 3, 3, 3, 3, 4, 4, 5, 5, 6, 7, 7, 7, 0, 8};
+const int Infix_Evaluator::NUMBER_OF_OPERATORS = 18;
 
 Infix_Evaluator::Infix_Evaluator(){} // Default constructor should do nothing
 
@@ -39,6 +38,7 @@ bool Infix_Evaluator::PushToOperatorStack(Token opToken)
 	int tokenIndex = -1, stackIndex = -1;
 	int stackPrecedence, tokenPrecedence;
 	Token stackOperator;
+	int RHS;
 	// Check if the operator is valid:
 	for (int i = 0; i < NUMBER_OF_OPERATORS; i++)
 	{
@@ -65,14 +65,35 @@ bool Infix_Evaluator::PushToOperatorStack(Token opToken)
 					}}
 				stackPrecedence = OPERATOR_PRECEDENCE[stackIndex];
 				tokenPrecedence = OPERATOR_PRECEDENCE[tokenIndex];
+
 				// Compare the precdences of the stack and the token
-				if (tokenPrecedence > stackPrecedence){
+
+				if (opToken.data == ")") // We've hit a closing parenthesis
+				{
+					if (operator_stack.empty()) 
+						throw std::logic_error("Closing Parenthesis without Open Parenthesis");
+					while (operator_stack.back().data != "(")
+					{
+							RHS = PopValue(stackOperator);
+							if (PushToValueStack(operator_evaluator(stackOperator, RHS))){
+								//std::cout << "Evaluated an operator." << std::endl;
+								operator_stack.pop_back();
+								if (!operator_stack.empty()){
+									stackOperator = operator_stack.back();
+								}
+								else throw std::logic_error("Unbalanced Parenthesis.");
+							}
+					}
+					operator_stack.pop_back();
+					return true;
+				}
+				else if (tokenPrecedence > stackPrecedence || opToken.data == "("){
 					// Push token to operator stack and return true
 					operator_stack.push_back(opToken);
 					return true;}
 				else // Stack has a higher precedence than token
 				{
-					int RHS = PopValue(stackOperator); // We'll need a value for the RHS to evaluate the token
+					RHS = PopValue(stackOperator); // We'll need a value for the RHS to evaluate the token
 					operator_stack.pop_back(); // Since we're about to use the operator from the stack, we pop it off.
 					if (PushToValueStack(operator_evaluator(stackOperator, RHS))){
 						//std::cout << "Evaluated an operator." << std::endl;
@@ -101,8 +122,12 @@ Token Infix_Evaluator::PopOperator(void){
 int Infix_Evaluator::PopValue(Token last_opToken){
 	/* This function, like the PopOperator function simultaneously returns and pops the top value
 	of value_stack. This function throws length_error if the stack was empty when this function is called. */
-	if (value_stack.empty()) 
-		throw Syntax_Error("The operator was missing a LHS/RHS", last_opToken);
+	if (value_stack.empty()){
+		if (last_opToken.data == "(" || last_opToken.data == ")")
+			throw Syntax_Error("Unbalanced Parenthesis", last_opToken);
+		else
+			throw Syntax_Error("The operator was missing a LHS/RHS", last_opToken);
+	}
 	int returnValue = value_stack.back();
 	value_stack.pop_back();
 	return returnValue;
