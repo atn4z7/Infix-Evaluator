@@ -32,11 +32,6 @@ public:
 	Token PopOperator(void);
 	int PopValue(Token last_opToken);
 	int operator_evaluator(Token opToken, int);
-	// Temporarilly public for testing
-	static const  std::string OPERATOR_LIST[]; // List of operators             Index of operator in operator list
-	static const int OPERATOR_PRECEDENCE[]; // List of precedence.             will be index of precedence here.
-	static const int NUMBER_OF_OPERATORS;
-	//std::vector<Token> tokens;
 	std::string evaluate(void); 
 
 	//An, Hoang
@@ -45,9 +40,11 @@ public:
 	//function that checks if a string is a number
 	bool isNumber(std::string& token);
 private:
+	static const  std::string OPERATOR_LIST[]; // List of operators             Index of operator in operator list
+	static const int OPERATOR_PRECEDENCE[]; // List of precedence.             will be index of precedence here.
+	static const int NUMBER_OF_OPERATORS;
 	std::vector<int> value_stack; // Vector based stack to hold non-operator tokens
 	std::vector<Token> operator_stack; // Vector based stack to hold operator tokens
-	//int r_int; // Final result of the expression
 };
 
 
