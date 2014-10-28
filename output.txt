@@ -35,7 +35,12 @@ Unbalanced Parenthesis.
 (
 ^ Unbalanced Parenthesis
 
+x+3
+^ Unknown Char Encountered!
 
+5+@3
+ ^^ Invalid Operator!
+ 
 !6!=!10
 Answer = 0
 
