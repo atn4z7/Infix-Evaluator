@@ -19,13 +19,15 @@ void Parser::Add(std::string& token){
 }
 
 Parser::Parser(std::string& expression){
+	//clear out the tokens vector
 	tokens.clear();
 	std::string tempdigit = "";
 	std::string tempoperator = "";
-	//remove all spaces first
+	//remove all spaces from the expression string
 	expression.erase(remove(expression.begin(), expression.end(), ' '), expression.end());
 	std::cout << expression << std::endl;
 	std::string::iterator itr = expression.begin();
+	//loop through the expression and check each char
 	while (itr != expression.end()){
 		if (isdigit(*itr)){ //token is a digit
 			//add the last operator to vector first
@@ -35,7 +37,7 @@ Parser::Parser(std::string& expression){
 			}
 			tempdigit+=*itr;
 			++itr;
-			if (itr == expression.end()){ //if token is at the end of the expression then just add it to vector
+			if (itr == expression.end()){ //if token is at the end of the expression then just add the number to vector
 				Add(tempdigit);
 				tempdigit = "";
 			}
@@ -46,7 +48,7 @@ Parser::Parser(std::string& expression){
 				Add(tempdigit);
 				tempdigit = "";
 			}
-
+			//below are different cases for different operators
 			char current = *itr;
 			switch (current)
 			{
@@ -54,17 +56,17 @@ Parser::Parser(std::string& expression){
 				tempoperator+=current;
 				if (tempoperator.length() == 1){
 					++itr;
-					if (itr == expression.end()){
+					if (itr == expression.end()){ //if '=' is at the end
 						Add(tempoperator);
 						throw Syntax_Error("Invalid Operator!", tokens[tokens.size()-1]);
 					}
 					Add(tempoperator+*itr);
-					if (*itr != '=')
+					if (*itr != '=') //if not "=="
 						throw Syntax_Error("Invalid Operator!", tokens[tokens.size()-1]);
 				}
 				else if (tempoperator.length() == 2){ 
 					Add(tempoperator);
-					//check all other valid cases of "_="
+					//check all other valid cases of "*=" (when = is the 2nd char)
 					if ((tempoperator != ">=") && 
 						(tempoperator != "<=") &&
 						(tempoperator != "!=") ){
@@ -75,7 +77,7 @@ Parser::Parser(std::string& expression){
 				break;
 			case '|':
 				tempoperator+=current;
-				if (tempoperator.length() == 2){ //full
+				if (tempoperator.length() == 2){ //tempoperator is at max length
 					Add(tempoperator);
 					if (tempoperator != "||"){
 						throw Syntax_Error("Invalid Operator!", tokens[tokens.size()-1]);
@@ -85,7 +87,7 @@ Parser::Parser(std::string& expression){
 				break;
 			case '&':
 				tempoperator+=current;
-				if (tempoperator.length() == 2){ //full
+				if (tempoperator.length() == 2){ //tempoperator is at max length
 					Add(tempoperator);
 					if (tempoperator != "&&"){
 						throw Syntax_Error("Invalid Operator!", tokens[tokens.size()-1]);
@@ -93,7 +95,46 @@ Parser::Parser(std::string& expression){
 					tempoperator = "";
 				}
 				break;
-			case '+': // * + 3 will be pushed to vector fine (*,+,3)  even LHS is missing
+			case '/': 
+			case '%':
+			case '*': 
+				tempoperator+=current;
+				++itr;
+				if (itr == expression.end()){ //if the operator is at the end
+					Add(tempoperator);
+					throw Syntax_Error("Missing RHS", tokens[tokens.size()-1]);
+				}
+				if (isdigit(*itr)) --itr; // /,%,* is followed by a number
+				else{ // /,%,* is followed by operator
+					if (*itr == '!' || *itr == '+' || *itr == '-' || *itr == '('){ //  /,%,* can only be followed by !,+,- +
+						Add(tempoperator);
+						--itr;
+					}
+					else{
+						Add(tempoperator+*itr);
+						throw Syntax_Error("Invalid Operator!", tokens[tokens.size()-1]);						
+					}
+					tempoperator = "";
+				}
+				break;
+			case '>':
+			case '<':
+				tempoperator+=current;
+				break;
+			case '(':
+			case ')':
+				//when we meet '(' or ')' we first add anything that is still in tempoperator to vector
+				if (tempoperator.length() >= 1){ 
+					//if operator is valid
+					Add(tempoperator);
+					tempoperator = "";
+				}
+				//add '(' or ')' to vector
+				tempoperator+=current;
+				Add(tempoperator);
+				tempoperator = "";
+				break;
+			case '+': 
 				tempoperator+=current;
 				++itr; //the 2nd char
 				//there is no 2nd char => throw error
@@ -136,7 +177,7 @@ Parser::Parser(std::string& expression){
 						}
 						else if (isdigit(*itr)){ // the 3rd char is a digit
 							--itr;
-							if (tempoperator == "++"){ //++number
+							if (tempoperator == "++"){ //++ followed by number
 								Add(tempoperator);
 								//check if there is a ++, --, ! before, throw error if there is
 								if ((tokens.size() > 1 && (tokens[tokens.size()-2].data == "++" 
@@ -151,7 +192,7 @@ Parser::Parser(std::string& expression){
 							}
 							
 						}
-						else{ //is operator
+						else{ //is operator=> check all valid cases of +** 
 							tempoperator+=*itr;
 							if (tempoperator == "+--"){
 								Add(std::string("+"));
@@ -201,7 +242,8 @@ Parser::Parser(std::string& expression){
 					}
 					else{
 						--itr; //go back one more char
-						if (!isdigit(*itr)){//check if there is an operator before the minus
+						//if there is an operator before the minus, we've encountered a negative number
+						if (!isdigit(*itr) && *itr != ')'){
 							tempdigit+="-";
 							tempoperator = "";
 						}
@@ -236,7 +278,7 @@ Parser::Parser(std::string& expression){
 						}
 						if (isdigit(*itr)){ //the 3rd char is a digit
 							Add(tempoperator);
-							if (tempoperator != "--") //+-number -> wrong format
+							if (tempoperator != "--") //+- followed by a number -> wrong format
 								throw Syntax_Error("Invalid Operator!", tokens[tokens.size()-1]);
 							else{ //--number case
 								//check if there is a ++, -- before, throw error if there is
@@ -246,7 +288,7 @@ Parser::Parser(std::string& expression){
 							}
 							itr--;
 						}
-						else{ //is operator
+						else{ //is operator => check all valid cases of -**
 							tempoperator+=*itr;
 							if (tempoperator == "-++"){
 								Add(std::string("-"));
@@ -269,56 +311,21 @@ Parser::Parser(std::string& expression){
 					tempoperator = "";
 				}
 				break;
-			case '/': 
-			case '%':
-			case '*': 
-				tempoperator+=current;
-				++itr;
-				if (itr == expression.end()){
-					Add(tempoperator);
-					throw Syntax_Error("Missing RHS", tokens[tokens.size()-1]);
-				}
-				if (isdigit(*itr)) --itr;
-				else{ // * followed by operator
-					if (*itr == '!' || *itr == '+' || *itr == '-' || *itr == '('){ //* can be followed by !,+,- +
-						Add(tempoperator);
-						--itr;
-					}
-					else{
-						Add(tempoperator+*itr);
-						throw Syntax_Error("Invalid Operator!", tokens[tokens.size()-1]);						
-					}
-					tempoperator = "";
-				}
-				break;
-			case '>':
-			case '<':
-				tempoperator+=current;
-				break;
-			case '(':
-			case ')':
-				if (tempoperator.length() >= 1){ //when we meet ! we first add anything that is still in tempoperator to vector
-					//if op is valid
-					Add(tempoperator);
-					tempoperator = "";
-				}
-				tempoperator+=current;
-				Add(tempoperator);
-				tempoperator = "";
-				break;
 			case '!':
-				if (tempoperator.length() >= 1){ //when we meet ! we first add anything that is still in tempoperator to vector
+				//when we meet '!' we first add anything that is still in tempoperator to vector
+				if (tempoperator.length() >= 1){ 
 					Add(tempoperator);
 					tempoperator = "";
 				}
 				tempoperator+=current;
 				++itr;
-				if (itr == expression.end()){
+				if (itr == expression.end()){ //if '!' is at the end
 					Add(tempoperator);
 					throw Syntax_Error("Invalid Operator!", tokens[tokens.size()-1]);
 				}
-				if (isdigit(*itr)){ 
+				if (isdigit(*itr)){ //if '!' is followed by a number
 					Add(tempoperator);
+					//if before '!', there was a prefix operator then throw error
 					if ((tokens.size() > 1 && (tokens[tokens.size()-2].data == "++" 
 						|| tokens[tokens.size()-2].data == "--" 
 						|| tokens[tokens.size()-2].data == "!"))){
@@ -327,7 +334,8 @@ Parser::Parser(std::string& expression){
 					tempoperator="";
 					--itr;
 				}
-				else{ // ! followed by operator - * can be followed by !,+,-,= 
+				else{ // '!' followed by operator 
+					// '!' can only be followed by !,+,-,= 
 					if (*itr == '!' || *itr == '+' || *itr == '-' || *itr == '('){
 						Add(tempoperator);
 						--itr;
@@ -346,12 +354,13 @@ Parser::Parser(std::string& expression){
 			case '^':
 				tempoperator+=current;
 				++itr;
-				if (itr == expression.end()){
+				if (itr == expression.end()){ //if '^' is at the end
 					Add(tempoperator);
 					throw Syntax_Error("Missing Exponential!", tokens[tokens.size()-1]);
 				}
-				if (isdigit(*itr)) --itr;
-				else{ // ^ followed by operator - ^ can be followed by !,+,-
+				if (isdigit(*itr)) --itr; // if '^' is followed by a number
+				else{ // '^' is followed by operator 
+					//'^' can only be followed by !,+,-
 					if (*itr == '!' || *itr == '+' || *itr == '-'){
 						Add(tempoperator);
 						--itr;
@@ -366,6 +375,8 @@ Parser::Parser(std::string& expression){
 				//default:	
 			}
 			++itr;
+			//before going to the next loop, we check if we are at the end of the expression
+			// if so, we add whatever left in tempoperator to vector
 			if (itr == expression.end()){
 				if (tempoperator != ""){
 					Add(tempoperator);
