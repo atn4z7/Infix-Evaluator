@@ -1,6 +1,7 @@
 #include "Syntax_Error.h"
 
 Syntax_Error::Syntax_Error(){}
+
 Syntax_Error::Syntax_Error(std::string msg,Token token){
 	error = msg;
 	index = token.index;
