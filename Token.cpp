@@ -14,3 +14,4 @@ Token& Token::operator=(Token rhs)
   length = rhs.length;
   return *this;
 }
+
