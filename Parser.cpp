@@ -372,7 +372,10 @@ Parser::Parser(std::string& expression){
 					tempoperator = "";
 				}
 				break;
-				//default:	
+			default:	//unknown char encountered
+				tempoperator+=current;
+				Add(tempoperator);
+				throw Syntax_Error("Unknown Char Encountered!", tokens[tokens.size()-1]);	
 			}
 			++itr;
 			//before going to the next loop, we check if we are at the end of the expression
