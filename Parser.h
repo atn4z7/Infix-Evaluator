@@ -1,7 +1,6 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <iostream>
 #include <vector>
 #include <algorithm>
 #include "Token.h"
@@ -10,9 +9,9 @@
 class Parser{
 
 public:
-	//this constructor parses an inflix expression into tokens
+	//this constructor parses an inflix expression into tokens as well as throws syntax errors if there are any
 	Parser(std::string& expression);
-	//function to add and update tokens
+	//function to add and update tokens in the tokens vector
 	void Add(std::string& token);
 	//function to get the vector tokens
 	std::vector<Token> getTokens();
