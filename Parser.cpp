@@ -1,6 +1,6 @@
 #include "Parser.h"
 
-
+Parser::Parser(){};
 std::vector<Token> Parser::getTokens(){
 	return tokens;
 }
