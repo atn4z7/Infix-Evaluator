@@ -9,6 +9,7 @@
 class Parser{
 
 public:
+	Parser();
 	//this constructor parses an inflix expression into tokens as well as throws syntax errors if there are any
 	Parser(std::string& expression);
 	//function to add and update tokens in the tokens vector
