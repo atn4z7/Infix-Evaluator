@@ -156,7 +156,7 @@ Parser::Parser(std::string& expression){
 								tokens[tokens.size()-1].getData() =="!"))){
 									tokens[tokens.size()-1].setData(tokens[tokens.size()-1].getData()+tempoperator);
 									tokens[tokens.size()-1].setLength(tokens[tokens.size()-1].getData().size());
-									throw Syntax_Error("Multiple Prefix Operators not supported!", tokens[tokens.size()-2]);
+									throw Syntax_Error("Multiple Prefix Operators not supported!", tokens[tokens.size()-1]);
 							}
 							Add(tempoperator);
 							throw Syntax_Error("Missing a operator or a number at the end!", tokens[tokens.size()-1]);
@@ -168,13 +168,13 @@ Parser::Parser(std::string& expression){
 								throw Syntax_Error("Invalid Operator!", tokens[tokens.size()-1]);
 							}
 							else{ //case ++
-								//check if there is a ++, -- before, throw error if there is
+								//check if there is a ++, --, ! before, throw error if there is
 								if ((tokens.size() > 1 && (tokens[tokens.size()-1].getData() == "++" 
 									|| tokens[tokens.size()-1].getData() == "--"||
 									tokens[tokens.size()-1].getData() =="!"))){
 									tokens[tokens.size()-1].setData(tokens[tokens.size()-1].getData()+tempoperator);
 									tokens[tokens.size()-1].setLength(tokens[tokens.size()-1].getData().size());
-									throw Syntax_Error("Multiple Prefix Operators not supported!", tokens[tokens.size()-2]);
+									throw Syntax_Error("Multiple Prefix Operators not supported!", tokens[tokens.size()-1]);
 								}
 							}
 							Add(tempoperator);
@@ -355,6 +355,7 @@ Parser::Parser(std::string& expression){
 				if (tempoperator.length() >= 1){
 					Add(tempoperator);
 					tempoperator = "";
+					break;
 				}
 				tempoperator+=current;
 				if ((tokens.size() > 1 && (tokens[tokens.size()-1].getData() == "++" 
@@ -372,14 +373,6 @@ Parser::Parser(std::string& expression){
 				if (isdigit(*itr)){ //if '!' is followed by a number
 					Add(tempoperator);
 					//if before '!', there was a prefix operator then throw error
-					if ((tokens.size() > 1 && (tokens[tokens.size()-1].getData() == "++" 
-						|| tokens[tokens.size()-1].getData() == "--" 
-						|| tokens[tokens.size()-1].getData() == "!"))){
-							tokens[tokens.size()-1].setData(tokens[tokens.size()-1].getData()+tempoperator);
-							tokens[tokens.size()-1].setLength(tokens[tokens.size()-1].getData().size());
-							throw Syntax_Error("Multiple Prefix Operators not supported!", tokens[tokens.size()-1]);
-					}
-					Add(tempoperator);
 					tempoperator="";
 					--itr;
 				}
