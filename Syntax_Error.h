@@ -9,7 +9,7 @@ class Syntax_Error{
 	public:
 		Syntax_Error();
 		//this constructor takes a token in order to print out the error correctly based on the token index and length
-		Syntax_Error(std::string msg, Token& token);
+		Syntax_Error(std::string msg, Token token);
 		//function to print out where the error occurs in the expression
 		void Display();
 	private:
