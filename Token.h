@@ -7,7 +7,7 @@ public:
 	Token(std::string Data, int Index=0, int Length=0);
 	//overloading assignment operator
 	Token& operator=(Token rhs);
-	//data contains the operator string
+	//setters and getters
 	std::string getData();
 	int getLength();
 	int getIndex();
@@ -16,6 +16,7 @@ public:
 	void setIndex(int newIndex);
 
 private:
+	//data contains the operator string
 	std::string data;
 	//the index of the operator string in the original expression
 	int index;
