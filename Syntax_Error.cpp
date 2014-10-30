@@ -2,7 +2,7 @@
 
 Syntax_Error::Syntax_Error(){}
 
-Syntax_Error::Syntax_Error(std::string msg,Token& token){
+Syntax_Error::Syntax_Error(std::string msg, Token token){
 	error = msg;
 	index = token.getIndex();
 	length = token.getLength();
