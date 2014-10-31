@@ -1,3 +1,9 @@
+//============================================================================
+// Name        : Parser.h
+// Author      : An Nguyen, Hoang Nguyen
+// Description : Parser class header file
+//============================================================================
+
 #ifndef PARSER_H
 #define PARSER_H
 #include <vector>
