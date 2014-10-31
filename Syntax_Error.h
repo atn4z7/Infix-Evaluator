@@ -1,3 +1,9 @@
+//============================================================================
+// Name        : Syntax_Error.h
+// Author      : An Nguyen
+// Description : Syntax_Error class header file
+//============================================================================
+
 #ifndef SYNTAX_ERROR_H
 #define SYNTAX_ERROR_H
 
