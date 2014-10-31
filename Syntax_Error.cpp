@@ -20,3 +20,4 @@ void Syntax_Error::Display(){
 	//print out the error message
 	std::cout << " " << error << std::endl;
 }
+
