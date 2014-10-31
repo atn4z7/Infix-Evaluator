@@ -1,9 +1,13 @@
-/* 
-   C++ Infix Evaluator Class 
-   Justin Karnes
-   CS 303 - Data Structures
-   UMKC October 2014 
-*/
+//============================================================================
+// Name        : Inflix_Evaluator.h
+// Author      : Justin Karnes
+// Description : C++ Infix Evaluator Class 
+// CLass	   : CS 303 - Data Structures
+// Date        : UMKC October 2014 
+//============================================================================
+   
+   
+   
 
 #ifndef INFIX_EVALUATOR_H
 #define INFIX_EVALUATOR_H
