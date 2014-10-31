@@ -1,3 +1,9 @@
+//============================================================================
+// Name        : Token.h
+// Author      : An Nguyen
+// Description : Token class header file
+//============================================================================
+
 #ifndef TOKEN_H
 #define TOKEN_H
 #include <string>
