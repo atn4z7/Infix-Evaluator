@@ -1,3 +1,9 @@
+//============================================================================
+// Name        : Parser.cpp
+// Author      : An Nguyen, Hoang Nguyen
+// Description : Implementation of Parser class
+//============================================================================
+
 #include "Parser.h"
 std::vector<Token> Parser::getTokens(){
 	return tokens;
