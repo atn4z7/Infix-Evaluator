@@ -8,7 +8,7 @@
 #ifndef INFIX_EVALUATOR_H
 #define INFIX_EVALUATOR_H
 
-#include <vector>
+#include <stack>
 #include <iostream>
 #include <stdexcept>
 #include "Token.h"
@@ -35,7 +35,7 @@ public:
 	std::string evaluate(void); 
 
 	//An, Hoang
-	//function that evaluates an inflix expression
+	//function that evaluates an inflix expression and returns the final answer as a string
 	std::string evaluate(std::string& expression);
 	//function that checks if a string is a number
 	bool isNumber(std::string& token);
@@ -43,8 +43,8 @@ private:
 	static const  std::string OPERATOR_LIST[]; // List of operators             Index of operator in operator list
 	static const int OPERATOR_PRECEDENCE[]; // List of precedence.             will be index of precedence here.
 	static const int NUMBER_OF_OPERATORS;
-	std::vector<int> value_stack; // Vector based stack to hold non-operator tokens
-	std::vector<Token> operator_stack; // Vector based stack to hold operator tokens
+	std::stack<int> value_stack; // a stack to hold non-operator tokens
+	std::stack<Token> operator_stack; // a stack to hold operator tokens
 };
 
 
