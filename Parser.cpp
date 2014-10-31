@@ -98,7 +98,7 @@ Parser::Parser(std::string& expression){
 				++itr;
 				if (itr == expression.end()){ //if the operator is at the end
 					Add(tempoperator);
-					throw Syntax_Error("Missing RHS", tokens[tokens.size()-1]);
+					throw Syntax_Error("Missing RHS!", tokens[tokens.size()-1]);
 				}
 				if (isdigit(*itr)) --itr; // /,%,* is followed by a number
 				else{ // /,%,* is followed by operator
@@ -156,10 +156,10 @@ Parser::Parser(std::string& expression){
 								tokens[tokens.size()-1].getData() =="!"))){
 									tokens[tokens.size()-1].setData(tokens[tokens.size()-1].getData()+tempoperator);
 									tokens[tokens.size()-1].setLength(tokens[tokens.size()-1].getData().size());
-									throw Syntax_Error("Multiple Prefix Operators not supported!", tokens[tokens.size()-1]);
+									throw Syntax_Error("Multiple Unary Operators not supported!", tokens[tokens.size()-1]);
 							}
 							Add(tempoperator);
-							throw Syntax_Error("Missing a operator or a number at the end!", tokens[tokens.size()-1]);
+							throw Syntax_Error("Missing an operator or a number at the end!", tokens[tokens.size()-1]);
 						}
 						else if (*itr == '(' || *itr == '!'){ // the 3rd char is '(' / '!'
 							
@@ -174,7 +174,7 @@ Parser::Parser(std::string& expression){
 									tokens[tokens.size()-1].getData() =="!"))){
 									tokens[tokens.size()-1].setData(tokens[tokens.size()-1].getData()+tempoperator);
 									tokens[tokens.size()-1].setLength(tokens[tokens.size()-1].getData().size());
-									throw Syntax_Error("Multiple Prefix Operators not supported!", tokens[tokens.size()-1]);
+									throw Syntax_Error("Multiple Unary Operators not supported!", tokens[tokens.size()-1]);
 								}
 							}
 							Add(tempoperator);
@@ -191,7 +191,7 @@ Parser::Parser(std::string& expression){
 									tokens[tokens.size()-1].getData()=="!"))){
 									tokens[tokens.size()-1].setData(tokens[tokens.size()-1].getData()+tempoperator);
 									tokens[tokens.size()-1].setLength(tokens[tokens.size()-1].getData().size());
-									throw Syntax_Error("Multiple Prefix Operators not supported!", tokens[tokens.size()-1]);
+									throw Syntax_Error("Multiple Unary Operators not supported!", tokens[tokens.size()-1]);
 								}
 								Add(tempoperator);
 							}
@@ -215,13 +215,13 @@ Parser::Parser(std::string& expression){
 								if (*itr=='+'){
 									tempoperator+=*itr;
 									Add(tempoperator);
-									throw Syntax_Error("Multiple Prefix Operators not supported", tokens[tokens.size()-1]);
+									throw Syntax_Error("Multiple Unary Operators not supported!", tokens[tokens.size()-1]);
 								}
 								else if (*itr=='!'){
 									tempoperator+=*itr;
 									Add(std::string("+"));
 									Add(std::string("++!"));
-									throw Syntax_Error("Multiple Prefix Operators not supported", tokens[tokens.size()-1]);
+									throw Syntax_Error("Multiple Unary Operators not supported!", tokens[tokens.size()-1]);
 								}
 								else if(isdigit(*itr)||*itr=='('||*itr=='-'){
 									Add(std::string("+"));
@@ -284,7 +284,7 @@ Parser::Parser(std::string& expression){
 						//there is no 3rd char => throw error
 						if (itr == expression.end()){
 							Add(tempoperator);
-							throw Syntax_Error("Missing a operator a number at the end!", tokens[tokens.size()-1]);
+							throw Syntax_Error("Missing an operator or a number at the end!", tokens[tokens.size()-1]);
 						}
 						else if (*itr == '(' || *itr == '!'){ //the 3rd char is '(' or '!'
 							if (tempoperator.substr(0,1) != tempoperator.substr(1,1)){ //-+( case
@@ -298,7 +298,7 @@ Parser::Parser(std::string& expression){
 									|| tokens[tokens.size()-1].getData() == "!"))){
 									tokens[tokens.size()-1].setData(tokens[tokens.size()-1].getData()+tempoperator);
 									tokens[tokens.size()-1].setLength(tokens[tokens.size()-1].getData().size());
-									throw Syntax_Error("Multiple Prefix Operators not supported!", tokens[tokens.size()-1]);
+									throw Syntax_Error("Multiple Unary Operators not supported!", tokens[tokens.size()-1]);
 								}
 							}
 							Add(tempoperator);
@@ -316,7 +316,7 @@ Parser::Parser(std::string& expression){
 								if ((tokens.size() > 1 && (tokens[tokens.size()-1].getData() == "++" || tokens[tokens.size()-1].getData() == "--"))){
 									tokens[tokens.size()-1].setData(tokens[tokens.size()-1].getData()+tempoperator);
 									tokens[tokens.size()-1].setLength(tokens[tokens.size()-1].getData().size());
-									throw Syntax_Error("Multiple Prefix Operators not supported!", tokens[tokens.size()-1]);
+									throw Syntax_Error("Multiple Unary Operators not supported!", tokens[tokens.size()-1]);
 								}
 							}
 							Add(tempoperator);
@@ -342,13 +342,13 @@ Parser::Parser(std::string& expression){
 									if(tokens.size()==0){
 										tempoperator+=*itr;
 										Add(tempoperator);
-										throw Syntax_Error("Multiple Prefix Operators not supported", tokens[tokens.size()-1]);
+										throw Syntax_Error("Multiple Unary Operators not supported!", tokens[tokens.size()-1]);
 									}
 									else{
 										if (!isdigit(tokens[tokens.size()-1].getData()[0])){
 											tempoperator+=*itr;
 											Add(tempoperator);
-											throw Syntax_Error("Multiple Prefix Operators not supported", tokens[tokens.size()-1]);
+											throw Syntax_Error("Multiple Unary Operators not supported!", tokens[tokens.size()-1]);
 										}
 									}
 								}
@@ -356,7 +356,7 @@ Parser::Parser(std::string& expression){
 									tempoperator+=*itr;
 									Add(std::string("+"));
 									Add(std::string("++!"));
-									throw Syntax_Error("Multiple Prefix Operators not supported", tokens[tokens.size()-1]);
+									throw Syntax_Error("Multiple Unary Operators not supported!", tokens[tokens.size()-1]);
 								}
 								Add(std::string("-"));
 								Add(std::string("--"));
@@ -388,7 +388,7 @@ Parser::Parser(std::string& expression){
 					|| tokens[tokens.size()-1].getData() == "!"))){
 						tokens[tokens.size()-1].setData(tokens[tokens.size()-1].getData()+tempoperator);
 						tokens[tokens.size()-1].setLength(tokens[tokens.size()-1].getData().size());
-						throw Syntax_Error("Multiple Prefix Operators not supported!", tokens[tokens.size()-1]);
+						throw Syntax_Error("Multiple Unary Operators not supported!", tokens[tokens.size()-1]);
 				}
 				++itr;
 				if (itr == expression.end()){ //if '!' is at the end
@@ -398,7 +398,7 @@ Parser::Parser(std::string& expression){
 				if (isdigit(*itr)){ //if '!' is followed by a number
 					if (tokens.size() >= 1 && (isdigit(tokens[tokens.size()-1].getData()[0]))){
 						Add(tempoperator);
-						throw Syntax_Error("Missing a operator before this position", tokens[tokens.size()-1]);
+						throw Syntax_Error("Missing a binary operator before this position!", tokens[tokens.size()-1]);
 					}
 					Add(tempoperator);
 					//if before '!', there was a prefix operator then throw error
@@ -410,7 +410,7 @@ Parser::Parser(std::string& expression){
 					if ( *itr == '('||*itr == '+'||*itr == '-'){
 						if (tokens.size() >= 1 && (isdigit(tokens[tokens.size()-1].getData()[0]))){
 						Add(tempoperator);
-						throw Syntax_Error("Missing a operator before this position", tokens[tokens.size()-1]);
+						throw Syntax_Error("Missing a binary operator before this position!", tokens[tokens.size()-1]);
 					}
 						Add(tempoperator);
 						--itr;
@@ -422,7 +422,7 @@ Parser::Parser(std::string& expression){
 					else if (*itr == '!'){
 						tempoperator+=*itr;
 						Add(tempoperator);
-						throw Syntax_Error("Multiple Prefix Operators not supported!", tokens[tokens.size()-1]);
+						throw Syntax_Error("Multiple Unary Operators not supported!", tokens[tokens.size()-1]);
 					}
 					else{
 						Add(tempoperator);
