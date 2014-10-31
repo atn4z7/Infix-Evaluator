@@ -1,3 +1,9 @@
+//============================================================================
+// Name        : Syntax_Error.cpp
+// Author      : An Nguyen
+// Description : Implementation of Syntax_Error class
+//============================================================================
+
 #include "Syntax_Error.h"
 
 Syntax_Error::Syntax_Error(){}
@@ -20,4 +26,3 @@ void Syntax_Error::Display(){
 	//print out the error message
 	std::cout << " " << error << std::endl;
 }
-
