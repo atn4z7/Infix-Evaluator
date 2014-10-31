@@ -425,8 +425,6 @@ Parser::Parser(std::string& expression){
 						throw Syntax_Error("Multiple Unary Operators not supported!", tokens[tokens.size()-1]);
 					}
 					else{
-						Add(tempoperator);
-						tempoperator="";
 						tempoperator+=*itr;
 						Add(tempoperator);
 						throw Syntax_Error("Invalid Operator!", tokens[tokens.size()-1]);
