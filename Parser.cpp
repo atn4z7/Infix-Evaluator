@@ -333,8 +333,34 @@ Parser::Parser(std::string& expression){
 								Add(std::string("++"));
 							}
 							else if (tempoperator == "---"){
+								itr++;
+								if (itr == expression.end()){
+									Add(tempoperator);
+									throw Syntax_Error("Missing a number at the end!", tokens[tokens.size()-1]);
+								}
+								if (*itr=='-'){
+									if(tokens.size()==0){
+										tempoperator+=*itr;
+										Add(tempoperator);
+										throw Syntax_Error("Multiple Prefix Operators not supported", tokens[tokens.size()-1]);
+									}
+									else{
+										if (!isdigit(tokens[tokens.size()-1].getData()[0])){
+											tempoperator+=*itr;
+											Add(tempoperator);
+											throw Syntax_Error("Multiple Prefix Operators not supported", tokens[tokens.size()-1]);
+										}
+									}
+								}
+								else if (*itr=='!'){
+									tempoperator+=*itr;
+									Add(std::string("+"));
+									Add(std::string("++!"));
+									throw Syntax_Error("Multiple Prefix Operators not supported", tokens[tokens.size()-1]);
+								}
 								Add(std::string("-"));
 								Add(std::string("--"));
+								itr--;
 							}
 							else{
 								Add(tempoperator);
@@ -355,7 +381,6 @@ Parser::Parser(std::string& expression){
 				if (tempoperator.length() >= 1){
 					Add(tempoperator);
 					tempoperator = "";
-					break;
 				}
 				tempoperator+=current;
 				if ((tokens.size() > 1 && (tokens[tokens.size()-1].getData() == "++" 
@@ -371,14 +396,22 @@ Parser::Parser(std::string& expression){
 					throw Syntax_Error("Missing a number at the end!", tokens[tokens.size()-1]);
 				}
 				if (isdigit(*itr)){ //if '!' is followed by a number
+					if (tokens.size() >= 1 && (isdigit(tokens[tokens.size()-1].getData()[0]))){
+						Add(tempoperator);
+						throw Syntax_Error("Missing a operator before this position", tokens[tokens.size()-1]);
+					}
 					Add(tempoperator);
 					//if before '!', there was a prefix operator then throw error
 					tempoperator="";
 					--itr;
 				}
 				else{ // '!' followed by operator
-					// '!' can only be followed by !,+,-,=
-					if (*itr == '+' || *itr == '-' || *itr == '('){
+					// '!' can only be followed by +,-,=
+					if ( *itr == '('||*itr == '+'||*itr == '-'){
+						if (tokens.size() >= 1 && (isdigit(tokens[tokens.size()-1].getData()[0]))){
+						Add(tempoperator);
+						throw Syntax_Error("Missing a operator before this position", tokens[tokens.size()-1]);
+					}
 						Add(tempoperator);
 						--itr;
 					}
