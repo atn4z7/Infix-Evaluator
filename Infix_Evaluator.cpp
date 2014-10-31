@@ -1,9 +1,11 @@
-/*
-Infix Evaluator Source
-Justin Karnes
-CS 303 - Data Structures (Prof. Kuhail)
-October 2014
-*/
+//============================================================================
+// Name        : Inflix_Evaluator.cpp
+// Author      : Justin Karnes
+// Description : Infix Evaluator Class Implementation
+// CLass	   : CS 303 - Data Structures
+// Date        : UMKC October 2014 
+//============================================================================
+   
 #include "Infix_Evaluator.h"
 
 // Static Variables
