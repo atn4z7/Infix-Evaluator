@@ -5,24 +5,26 @@ CS 303 - Data Structures (Prof. Kuhail)
 October 2014
 */
 #include "Infix_Evaluator.h"
+
 // Static Variables
 const std::string Infix_Evaluator::OPERATOR_LIST[] ={ "==", "!=", "&&", "||", ">", ">=", "<", "<=","+", "-", "*", "/", "^", "!", "++", "--", "(", ")" }; // Binary Operators are 0-12
 const int Infix_Evaluator::OPERATOR_PRECEDENCE[]= {2, 2, 1, 1, 3, 3, 3, 3, 4, 4, 5, 5, 6, 7, 7, 7, 0, 8};
 const int Infix_Evaluator::NUMBER_OF_OPERATORS = 18;
+
 Infix_Evaluator::Infix_Evaluator(){} // Default constructor should do nothing
 Infix_Evaluator::~Infix_Evaluator(){
-	/* The end of the construtor should end with the class having either primative data types or empty vectors
-	However, in the event of an error, the destructor needs to make sure the vectors are empty, and if not
-	delete them. Since we are using std::vector, std::vector::~vector() should handle this automatically. Test it.*/ }
+	/* The end of the construtor should end with the class having either primative data types or empty stacks
+	However, in the event of an error, the destructor needs to make sure the stacks are empty, and if not
+	delete them. Since we are using std::stack, std::vector::~stack() should handle this automatically.*/ }
 bool Infix_Evaluator::PushToValueStack(int newValue){
 	/* This function accepts an integer parameter, which can come from a token, or from an evaluation, and puts it
-	into the value_stack vector. Always pushes back to the end of the vector. std::vector::push_back() handles resizing.*/
+	into the value_stack.*/
 	try
 	{
-		value_stack.push_back(newValue);
+		value_stack.push(newValue);
 		return true;
 	}
-	// The following line will catch any exception which occurs in attempting to push the value to the vector
+	// The following line will catch any exception which occurs in attempting to push the value to the stack
 	catch (...) {
 		std::cout << "An error occured in attempting to push " << newValue << " onto the value_stack!" << std::endl;
 		return false; }
@@ -45,13 +47,13 @@ bool Infix_Evaluator::PushToOperatorStack(Token opToken)
 		{
 			if (operator_stack.empty()) // Operator Stack is empty
 			{
-				operator_stack.push_back(opToken);
+				operator_stack.push(opToken);
 				return true;
 			}
 			else // operator_stack was not empty
 			{
 				// Find precedence of the top of the operator stack
-				stackOperator = operator_stack.back();
+				stackOperator = operator_stack.top();
 				for (int j = 0; j < NUMBER_OF_OPERATORS; j++)
 				{
 					if (stackOperator.getData() == OPERATOR_LIST[j]){
@@ -64,29 +66,29 @@ bool Infix_Evaluator::PushToOperatorStack(Token opToken)
 				{
 					if (operator_stack.empty())
 						throw std::logic_error("Closing Parenthesis without Open Parenthesis");
-					while (operator_stack.back().getData() != "(")
+					while (operator_stack.top().getData() != "(")
 					{
 						RHS = PopValue(stackOperator);
 						if (PushToValueStack(operator_evaluator(stackOperator, RHS))){
 							//std::cout << "Evaluated an operator." << std::endl;
-							operator_stack.pop_back();
+							operator_stack.pop();
 							if (!operator_stack.empty()){
-								stackOperator = operator_stack.back();
+								stackOperator = operator_stack.top();
 							}
 							else throw std::logic_error("Unbalanced Parenthesis.");
 						}
 					}
-					operator_stack.pop_back();
+					operator_stack.pop();
 					return true;
 				}
 				else if (tokenPrecedence > stackPrecedence || opToken.getData() == "("){
 					// Push token to operator stack and return true
-					operator_stack.push_back(opToken);
+					operator_stack.push(opToken);
 					return true;}
 				else // Stack has a higher precedence than token
 				{
 					RHS = PopValue(stackOperator); // We'll need a value for the RHS to evaluate the token
-					operator_stack.pop_back(); // Since we're about to use the operator from the stack, we pop it off.
+					operator_stack.pop(); // Since we're about to use the operator from the stack, we pop it off.
 					if (PushToValueStack(operator_evaluator(stackOperator, RHS))){
 						//std::cout << "Evaluated an operator." << std::endl;
 					}
@@ -104,8 +106,8 @@ Token Infix_Evaluator::PopOperator(void){
 	// This function simultaneously removes the top element of the operator stack and returns it
 	// This function throws a length error if the stack was empty when this function is called
 	if (operator_stack.empty()) throw std::length_error("Operator Stack was empty");
-	Token returnToken = operator_stack.back();
-	operator_stack.pop_back();
+	Token returnToken = operator_stack.top();
+	operator_stack.pop();
 	return returnToken;
 }
 int Infix_Evaluator::PopValue(Token last_opToken){
@@ -117,8 +119,8 @@ int Infix_Evaluator::PopValue(Token last_opToken){
 		else
 			throw Syntax_Error("The operator was missing a LHS/RHS", last_opToken);
 	}
-	int returnValue = value_stack.back();
-	value_stack.pop_back();
+	int returnValue = value_stack.top();
+	value_stack.pop();
 	return returnValue;
 }
 int Infix_Evaluator::operator_evaluator(Token opToken, int RHS){
@@ -170,19 +172,26 @@ std::string Infix_Evaluator::evaluate(std::string& expression){
 	/* This function uses Parser class to split the expression into tokens.
 	Each token will then be added to value_stack/operator_stack based on its type.
 	the function returns the final value of the expression */
+
 	//clear out the 2 stacks first
-	value_stack.clear();
-	operator_stack.clear();
+	while (!value_stack.empty()){
+		value_stack.pop();
+	}
+	while (!operator_stack.empty()){
+		operator_stack.pop();
+	}
 	std::string answer;
 	std::vector<Token> tokens; //temporary vector to store tokens
 	try{
 		Parser parser(expression); //parse the expression, all tokens will be stored to vector tokens
 		tokens = parser.getTokens();
+
 		/*
 		//print out tokens for testing
 		for (int a = 0; a < tokens.size(); a++){
 		std::cout << tokens[a].data << " ";
 		}*/
+
 		//adding each token to appropriate stacks
 		for (int i =0; i<tokens.size();i++){
 			if (isNumber(tokens[i].getData())){
@@ -208,6 +217,7 @@ std::string Infix_Evaluator::evaluate(std::string& expression){
 	}
 	return answer; //this is the final answer
 }
+
 //this function checks if a string is a number
 bool Infix_Evaluator::isNumber(std::string& token)
 {
