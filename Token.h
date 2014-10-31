@@ -1,7 +1,9 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 #include <string>
+
 class Token{
+
 public:
 	Token();
 	Token(std::string Data, int Index=0, int Length=0);
@@ -14,7 +16,6 @@ public:
 	void setData(std::string newData);
 	void setLength(int newLength);
 	void setIndex(int newIndex);
-
 private:
 	//data contains the operator string
 	std::string data;
@@ -22,6 +23,6 @@ private:
 	int index;
 	//the length of the operator string
 	int length;
-
 };
+
 #endif
