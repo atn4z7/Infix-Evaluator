@@ -1,3 +1,8 @@
+//============================================================================
+// Name        : Main.cpp
+// Author      : An Nguyen
+// Description : Main function of the program
+//============================================================================
 
 #include <fstream>
 #include "Infix_Evaluator.h"
