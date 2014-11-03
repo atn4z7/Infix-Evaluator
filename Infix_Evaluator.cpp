@@ -17,7 +17,7 @@ Infix_Evaluator::Infix_Evaluator(){} // Default constructor should do nothing
 Infix_Evaluator::~Infix_Evaluator(){
 	/* The end of the construtor should end with the class having either primative data types or empty stacks
 	However, in the event of an error, the destructor needs to make sure the stacks are empty, and if not
-	delete them. Since we are using std::stack, std::vector::~stack() should handle this automatically.*/ }
+	delete them. Since we are using std::stack, std::~stack() should handle this automatically.*/ }
 bool Infix_Evaluator::PushToValueStack(int newValue){
 	/* This function accepts an integer parameter, which can come from a token, or from an evaluation, and puts it
 	into the value_stack.*/
