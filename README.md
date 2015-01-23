@@ -2,6 +2,10 @@
 
 This program is an Infix Expression Evaluator using Stack instead of Binary Search Tree
 
+**Output Examples**
+
+<a href="http://imgur.com/oqzwM3O"><img src="http://i.imgur.com/oqzwM3O.png" title="source: imgur.com" /></a>
+
 **ASSUMPTIONS**
 -	A plus sign is not needed to specify a positive number.
 - In order for a negative number to be recognized, the user has to enter the number right after the minus sign.
@@ -12,3 +16,4 @@ This program is an Infix Expression Evaluator using Stack instead of Binary Sear
 
 **UML CLASS DIAGRAM**
 <a href="http://imgur.com/Br1VBZa"><img src="http://i.imgur.com/Br1VBZa.png" title="source: imgur.com" /></a>
+
